@@ -16,7 +16,8 @@ _global_script_class_icons={
 [application]
 
 config/name="Drequa"
-config/icon="res://icon.png"
+run/main_scene="res://scenes/Main.tscn"
+config/icon="res://tex/icon.png"
 
 [rendering]
 
