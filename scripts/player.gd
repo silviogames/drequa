@@ -37,6 +37,8 @@ func init(posx,posy):
 	posy = 1
 	.init(posx,posy)
 	map.player = self
+	max_life = 100
+	life = 100
 
 func act():
 	pass

@@ -3,8 +3,12 @@ extends Node2D
 
 class_name Entity, "res://tex/test_person.png"
 var map = null
+var globals = null
 
 var pos = [0,0]
+
+var max_life = 100
+var life = 100
 
 var target_pos = null
 var target_axis= 0 # 0 = x, 1 = y
@@ -28,6 +32,9 @@ func dir_name(dir):
 func _ready():
 	map = get_node("/root/Main/Map")
 	map.entities.append(self)
+
+	globals = get_node("/root/Main/Globals")
+
 	
 	
 func init(posx,posy):
@@ -90,13 +97,13 @@ func end_move():
 		target_dir = 0
 		set_pos(target_pos[0], target_pos[1])
 		target_pos = null
+	$Sprite.position.y = 0
 	
 func move(value):
 	# map sends interpolation value for sprite to move its offset
 	if target_pos != null:
 		position[target_axis] = (pos[target_axis] * 16 + 8 ) + (target_dir * value * 16)
-
-
+		$Sprite.position.y = -sin(value * PI ) * 5
 func act():
 	# is called by map on every entity to decide what to after player made a step
 	print("not implemented by subclass!")
