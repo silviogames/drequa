@@ -7,7 +7,9 @@ var godot_ysort = null
 
 var entities = []
 
-enum MODE { IDLE, MOVE  }
+var attacks = [] # array of dicts
+
+enum MODE { IDLE, ACT  }
 var mode = MODE.IDLE
 
 export(float, 0.05,2 , 0.05) var move_time = 1
@@ -20,6 +22,8 @@ func _ready():
 	print("godot_ysort ", godot_ysort)
 
 func walkable( tx,ty ):
+
+	#check floor layer
 	var cell = $Floor.get_cell( tx, ty )
 	if cell == -1:
 		return false
@@ -27,9 +31,23 @@ func walkable( tx,ty ):
 		# will crash if tileset has tile that is not in tiles_floor!
 		if cell in tiles_floor:
 			var td = tiles_floor[cell]
-			return td["walkable"]
+			if not td["walkable"]:
+				return false
 		else:
 			return false
+	
+	#check entity layer:
+	# if entity has target pos, current pos is free in next step.
+	for e in entities:
+		if e.target_pos == null:
+			if e.pos[0] == tx and e.pos[1] == ty:
+				return false
+
+		else:
+			if e.target_pos[0] == tx and e.target_pos[1] == ty:
+				return false
+
+	return true
 
 func init_tiles():
 	# set values for all tiles
@@ -46,22 +64,53 @@ func create_tile_dict(name : String, walkable : bool):
 
 
 func tween_move(value):
-	if mode == MODE.MOVE:
+	if mode == MODE.ACT:
 		for ent in entities:
 			ent.move(value)
-	if mode == MODE.MOVE and value == 1:
+	if mode == MODE.ACT and value == 1:
 		for ent in entities:
 			ent.end_move()
+			
 		mode = MODE.IDLE
 
+		for att in attacks:
+			print("ATTACK")
+			print("attacker: ",att["att"])
+			print("victim: ", att["vic"])
+			print("pos: ", att["pos"])
+
+			var attacker = att["att"]
+			var victim = att["vic"]
+			var pos = att["pos"]
+
+			if pos == victim.pos:
+				print("victim is at attack position")
+				var attack_power = attacker.power()
+				print("attack power ", attack_power)
+				victim.hit(attack_power)
+					
+			else:
+				print("victim is not at attack position")
+
+		attacks.clear()
+
 	
-func start_move():
+func start_act():
 	for ent in entities:
 		ent.act()
-	mode = MODE.MOVE
+	mode = MODE.ACT
 	$entity_mover.interpolate_method(self, "tween_move", 0,1, move_time, Tween.TRANS_EXPO, Tween.EASE_IN)
 	$entity_mover.set_active(true)
 	$entity_mover.start()
+
+func attack_at(pos, attacker, victim):
+	# add attack to attack queue which is handled after all entities acted
+	var ad = {}
+	ad["pos"] = pos
+	ad["att"] = attacker
+	ad["vic"] = victim
+
+	attacks.append(ad)
 
 	
 func _input(event):
@@ -72,4 +121,4 @@ func _input(event):
 			e.init(4,3)
 			godot_ysort.add_child(e)
 
-
+	

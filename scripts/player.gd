@@ -1,35 +1,40 @@
 extends Entity
 
+var life_bar = null
+
 func _ready():
+	life_bar = get_node("/root/Main/Canvas_GUI/GUI/left_elements/bar/progress_life")
 	init(1,1)
-	pass
+	
+func life_changed():
+	life_bar.value = life
 	
 func _input(event):
-	var moved = false
+	var act = false
 	if event is InputEventKey:
 		if event.scancode == KEY_A:
 			if not event.pressed:
 				set_target(DIR.LEFT)
-				moved = true
+				act = true
 		if event.scancode == KEY_S:
 			if not event.pressed:
 				set_target(DIR.DOWN)
-				moved = true
+				act = true
 		if event.scancode == KEY_W:
 			if not event.pressed:
 				set_target(DIR.UP)
-				moved = true
+				act = true
 		if event.scancode == KEY_D:
 			if not event.pressed:
 				set_target(DIR.RIGHT)
-				moved = true
-		if event.scancode == KEY_T:
+				act = true
+		if event.scancode == KEY_Q:
 			if not event.pressed:
-				var dirs = move_to([1,1])
-				print("dirs ", dirs)
+				act = true
+				print("player waiting")
 
-	if moved:
-		map.start_move()
+	if act:
+		map.start_act()
 				
 				
 func init(posx,posy):
@@ -37,11 +42,16 @@ func init(posx,posy):
 	posy = 1
 	.init(posx,posy)
 	map.player = self
-	max_life = 100
-	life = 100
+	max_life = 150
+	life = 150
+	life_bar.max_value = max_life
+	life_bar.value = life
 
 func act():
 	pass
 	#player is not acting but controlled
+
+func power():
+	return 7
 
 
