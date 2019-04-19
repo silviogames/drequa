@@ -13,9 +13,15 @@ _global_script_classes=[ {
 "class": "Entity",
 "language": "GDScript",
 "path": "res://scripts/entity.gd"
+}, {
+"base": "Node2D",
+"class": "Furniture",
+"language": "GDScript",
+"path": "res://scripts/furniture.gd"
 } ]
 _global_script_class_icons={
-"Entity": "res://tex/test_person.png"
+"Entity": "res://tex/test_person.png",
+"Furniture": ""
 }
 
 [application]

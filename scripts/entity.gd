@@ -2,8 +2,11 @@ extends Node2D
 
 
 const utils = preload("res://scripts/utils.gd")
+const utils_dir = preload("res://scripts/utils_dir.gd")
+
 class_name Entity, "res://tex/test_person.png"
 var map = null
+var main = null
 var globals = null
 
 var pos = [0,0]
@@ -19,62 +22,18 @@ var attack_dir = null
 var attack_target = null
 
 
-enum DIR { UP, RIGHT, LEFT, DOWN}
-
-func dir_name(dir):
-	match dir:
-		DIR.UP:
-			return "up"
-		DIR.RIGHT:
-			return "right"
-		DIR.DOWN:
-			return "down"
-		DIR.LEFT:
-			return "left"
-		_:
-			return "none"
-
-func dir_to_axis(dir):
-	match dir:
-		DIR.UP:
-			return 1
-		DIR.RIGHT:
-			return 0
-		DIR.DOWN:
-			return 1
-		DIR.LEFT:
-			return 0
-		_:
-			return 0
-
-func dir_to_sign(dir):
-	match dir:
-		DIR.UP:
-			return -1
-		DIR.RIGHT:
-			return 1
-		DIR.DOWN:
-			return 1
-		DIR.LEFT:
-			return -1
-		_:
-			return 0
-
-
 func _ready():
 	map = get_node("/root/Main/Map")
-	map.entities.append(self)
-
+	main = get_node("/root/Main")
 	globals = get_node("/root/Main/Globals")
 
 	
 	
-func init(posx,posy):
-	set_pos(posx,posy)
-
+func super_init(init_pos):
+	set_pos(init_pos)
 	
-func set_pos(tx,ty):
-	self.pos = [tx, ty]
+func set_pos(new_pos):
+	self.pos = new_pos
 	position.x = (pos[0] * 16) + 8
 	position.y = (pos[1] * 16) + 8
 
@@ -84,16 +43,16 @@ func set_target(dir):
 	var dty = 0
 
 	match dir:
-		DIR.UP:
+		utils_dir.DIR.UP:
 			dtx = 0
 			dty = -1
-		DIR.RIGHT:
+		utils_dir.DIR.RIGHT:
 			dtx = 1
 			dty = 0
-		DIR.DOWN:
+		utils_dir.DIR.DOWN:
 			dtx = 0
 			dty = 1
-		DIR.LEFT:
+		utils_dir.DIR.LEFT:
 			dtx = -1
 			dty = 0
 
@@ -127,13 +86,13 @@ func end_move():
 	if target_pos != null:
 		target_axis = 0
 		target_dir = 0
-		set_pos(target_pos[0], target_pos[1])
+		set_pos(target_pos)
 		target_pos = null
 	$Sprite.position.y = 0
 	$Sprite.position.x = 0
 
 	if attack_target != null:
-		var attack_pos = abs_pos(attack_dir)
+		var attack_pos = utils_dir.abs_pos(attack_dir, pos)
 		map.attack_at(attack_pos, self, attack_target)
 		
 
@@ -145,7 +104,7 @@ func move(value):
 		if target_axis == 0:
 			$Sprite.position.y = -sin(value * PI ) * 5
 	if attack_dir != null:
-		$Sprite.position[dir_to_axis(attack_dir)] = dir_to_sign(attack_dir) * value * 8
+		$Sprite.position[utils_dir.dir_to_axis(attack_dir)] = utils_dir.dir_to_sign(attack_dir) * value * 8
 		
 
 
@@ -160,26 +119,6 @@ func attack(attacker, victim):
 	else:
 		print("fighters are NOT next to each other!")
 
-func abs_pos(dir):
-	# calculate absolute position from current posiiton of entity and dir offset
-
-	var dtx = 0
-	var dty = 0
-
-	match dir:
-		DIR.UP:
-			dtx = 0
-			dty = -1
-		DIR.RIGHT:
-			dtx = 1
-			dty = 0
-		DIR.DOWN:
-			dtx = 0
-			dty = 1
-		DIR.LEFT:
-			dtx = -1
-			dty = 0
-	return [pos[0] + dtx, pos[1] + dty]
 
 func get_next_pos():
 	if target_pos == null:
@@ -200,16 +139,16 @@ func move_to(move_pos):
 	var mx = -1
 	var my = -1
 	if dx > 0:
-		mx = DIR.RIGHT
+		mx = utils_dir.DIR.RIGHT
 	elif dx < 0:
-		mx =  DIR.LEFT
+		mx =  utils_dir.DIR.LEFT
 	else:
 		mx = -1
 
 	if dy > 0:
-		my = DIR.DOWN
+		my = utils_dir.DIR.DOWN
 	elif dy < 0:
-		my = DIR.UP
+		my = utils_dir.DIR.UP
 	else:
 		my = -1
 
@@ -218,28 +157,6 @@ func move_to(move_pos):
 	else:
 		return [my, mx]
 
-func get_dir(other_pos):
-	# if other_pos is next to current pos then return direction to reach that position, else return -1
-	var dx = other_pos[0] - pos[0]
-	var dy = other_pos[1] - pos[1]
-	if dx == 0 and dy == 0:
-		# already at pos
-		return -1
-
-	if dx == 0:
-		if dy == -1:
-			return DIR.UP
-		elif dy == 1:
-			return DIR.DOWN
-		else:
-			return -1
-	elif dy == 0:
-		if dx == -1:
-			return DIR.LEFT
-		elif dx == 1:
-			return DIR.RIGHT
-		else:
-			return -1
 
 func power():
 	print("func power not implemented by child!")

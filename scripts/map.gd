@@ -1,6 +1,7 @@
 extends Node2D
 
 var enemy = load("res://scenes/Enemy.tscn")
+var player_class = load("res://scenes/Player.tscn")
 var tiles_floor = {}
 
 var godot_ysort = null
@@ -13,13 +14,23 @@ enum MODE { IDLE, ACT  }
 var mode = MODE.IDLE
 
 export(float, 0.05,2 , 0.05) var move_time = 1
+export(int) var player_spawn_x = 1
+export(int) var player_spawn_y = 1
 
 var player = null
 
 func _ready():
 	init_tiles()
 	godot_ysort = get_node("/root/Main/Objects")
-	print("godot_ysort ", godot_ysort)
+	player = player_class.instance()
+	add_entity(player)
+	player.connect_ui()
+	player.init([player_spawn_x,player_spawn_y])
+	
+
+
+func is_idle():
+	return mode == MODE.IDLE
 
 func walkable( tx,ty ):
 
@@ -118,7 +129,11 @@ func _input(event):
 		if event.scancode == KEY_SPACE and not event.pressed:
 			#spawning new entity
 			var e = enemy.instance()
-			e.init(4,3)
-			godot_ysort.add_child(e)
+			e.init([4,3])
+			add_entity(e)
+			
+func add_entity(entity):
+	self.entities.append(entity)
+	godot_ysort.add_child(entity)
 
 	

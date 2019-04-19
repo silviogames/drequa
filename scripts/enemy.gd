@@ -11,8 +11,8 @@ var current_task = TASK.IDLE
 func _ready():
 	pass
 
-func init(posx,posy):
-	.init(posx, posy)
+func init(init_pos):
+	super_init(init_pos)
 	max_life = 50
 	life = 50
 
@@ -60,7 +60,7 @@ func task_follow():
 				print("dir not good ",d)
 				continue
 			else:
-				var move_pos = abs_pos(d)
+				var move_pos = utils_dir.abs_pos(d, pos)
 				if map.walkable( move_pos[0], move_pos[1] ):
 					print("walking in dir ", d)
 					set_target(d)
@@ -79,8 +79,8 @@ func task_attack():
 		attack_dir = null
 		attack_target = null
 	else:
-		var player_dir = get_dir(map.player.get_next_pos())
-		print("player is " + dir_name(player_dir))
+		var player_dir = utils_dir.get_dir(pos, map.player.get_next_pos())
+		print("player is " + utils_dir.dir_name(player_dir))
 		if player_dir != -1:
 			attack_target = map.player
 			attack_dir = player_dir

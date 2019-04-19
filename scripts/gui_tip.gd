@@ -33,4 +33,7 @@ func _on_Tween_tween_completed(object, key):
 			$Timer.start()
 		STATUS.GO:
 			queue_free()
+			
+func set_message( message):
+	$MarginContainer/Label.text = message
 
