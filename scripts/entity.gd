@@ -37,49 +37,12 @@ func set_pos(new_pos):
 	position.x = (pos[0] * 16) + 8
 	position.y = (pos[1] * 16) + 8
 
-func set_target(dir):
-	# set target tile if none has been set
-	var dtx = 0
-	var dty = 0
-
-	match dir:
-		utils_dir.DIR.UP:
-			dtx = 0
-			dty = -1
-		utils_dir.DIR.RIGHT:
-			dtx = 1
-			dty = 0
-		utils_dir.DIR.DOWN:
-			dtx = 0
-			dty = 1
-		utils_dir.DIR.LEFT:
-			dtx = -1
-			dty = 0
-
-	if target_pos == null:
-		var ntx = pos[0] + dtx
-		var nty = pos[1] + dty
-		if ntx == pos[0] and nty != pos[1]:
-			target_axis = 1
-			if nty < pos[1]:
-				target_dir = -1
-			else:
-				target_dir = 1
-		elif nty == pos[1] and ntx != pos[0]:
-			target_axis = 0
-			if ntx < pos[0]:
-				target_dir = -1
-			else:
-				target_dir = 1
-
-		if map.walkable(ntx,nty):
-			target_pos = [pos[0] + dtx, pos[1] + dty]
-		else:
-			print("cannot enter tile at " + String(ntx) + " " + String(nty)) 
-			target_pos = null
-	else:
-		print("cannot set target while moving")
-
+func plan_move():
+	#this method is called before the action when this entity is about to move
+	# check here for pushing furniture blocks
+	# override in subclass!
+	print("entity.plan_move not implemented in child class")
+		
 
 func end_move():
 	# transition is over. set current pos to target pos 
@@ -175,5 +138,7 @@ func hit(power):
 func life_changed():
 	# abstract class only used by player for now to update life bar in ui
 	pass
+
+
 
 

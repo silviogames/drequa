@@ -39,7 +39,7 @@ func task_idle():
 		return
 	else:
 		if utils.rand_int(0,10) == 10:
-			set_target(utils.rand_dir() )
+			utils_dir.create_target_dir(self, utils_dir.rand_dir(), map) 
  
 func task_follow():
 	if utils.next_to(self.pos, map.player.get_next_pos()):
@@ -62,12 +62,12 @@ func task_follow():
 			else:
 				var move_pos = utils_dir.abs_pos(d, pos)
 				if map.walkable( move_pos[0], move_pos[1] ):
-					print("walking in dir ", d)
-					set_target(d)
+					#print("walking in dir ", d)
+					utils_dir.create_target_dir(self, d, map) 
 					return
 
-		print("random movement")
-		set_target(utils.rand_dir() )
+		#print("random movement")
+		utils_dir.create_target_dir(self, utils_dir.rand_dir(), map) 
 
 
 func task_attack():

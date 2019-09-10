@@ -6,9 +6,6 @@ static func rand_int(start, end):
 		return start
 	return start + (randi() % (end - start + 1))
 
-static func rand_dir():
-	var r = randi() % 4
-	return r
 
 static func dst(pos1, pos2):
 	return int( sqrt( pow( abs( pos1[0] - pos2[0]), 2) + pow( abs( pos1[1] - pos2[1]), 2)))

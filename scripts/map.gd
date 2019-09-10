@@ -1,6 +1,10 @@
 extends Node2D
 
+var utils = preload("res://scripts/utils.gd")
 var enemy = load("res://scenes/Enemy.tscn")
+var furniture_block = load("res://scenes/Furniture_Block.tscn")
+var utils_dir = preload("res://scripts/utils_dir.gd")
+
 var player_class = load("res://scenes/Player.tscn")
 var tiles_floor = {}
 
@@ -131,9 +135,31 @@ func _input(event):
 			var e = enemy.instance()
 			e.init([4,3])
 			add_entity(e)
-			
+		if event.scancode == KEY_B and not event.pressed:
+			#spawning block
+			var b = furniture_block.instance()
+			b.init([utils.rand_int(1,7),utils.rand_int(1,7)])
+			add_entity(b)
+
 func add_entity(entity):
 	self.entities.append(entity)
 	godot_ysort.add_child(entity)
 
-	
+func find_object(pos):
+	# looks for object in entity list at pos
+	for e in entities:
+		if e.pos == pos:
+			return e
+	return null
+
+func push_object(pos, dir):
+	print("pushing object at ", str(pos))
+	print("towards ", utils_dir.dir_name(dir))
+	var e  = find_object(pos)
+	if e != null:
+		print("pushing object ", e.name)
+		e.push(dir)
+
+	else:
+		print("no object at position")
+

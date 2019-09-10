@@ -88,3 +88,67 @@ static func get_dir(this_pos, other_pos):
 			return DIR.RIGHT
 		else:
 			return -1
+
+static func rand_dir():
+	var r = randi() % 4
+	return r
+
+static func create_target_dir(obj, dir, map):
+
+	var dtx = 0
+	var dty = 0
+
+	# obj must have these members:
+	# pos
+	# target_pos
+	# target_axis
+	# target_dir
+	# func plan_move() 
+
+	match dir:
+		DIR.UP:
+			dtx = 0
+			dty = -1
+		DIR.RIGHT:
+			dtx = 1
+			dty = 0
+		DIR.DOWN:
+			dtx = 0
+			dty = 1
+		DIR.LEFT:
+			dtx = -1
+			dty = 0
+	
+	if obj.target_pos == null:
+
+		var ntx = obj.pos[0] + dtx
+		var nty = obj.pos[1] + dty
+		if ntx == obj.pos[0] and nty != obj.pos[1]:
+			obj.target_axis = 1
+			if nty < obj.pos[1]:
+				obj.target_dir = -1
+			else:
+				obj.target_dir = 1
+		elif nty == obj.pos[1] and ntx != obj.pos[0]:
+			obj.target_axis = 0
+			if ntx < obj.pos[0]:
+				obj.target_dir = -1
+			else:
+				obj.target_dir = 1
+
+		if map.walkable(ntx,nty):
+			obj.target_pos = [obj.pos[0] + dtx, obj.pos[1] + dty]
+			obj.plan_move()
+		else:
+			obj.target_pos = null
+			var nd = abs_pos(dir, obj.pos)
+			map.push_object(nd, dir)
+
+			
+	else:
+		print("obj cannot move, map is not walkable there")
+
+
+
+
+
